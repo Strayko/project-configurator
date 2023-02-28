@@ -116,13 +116,15 @@ Thread.Sleep(2000);
 
 // Setup appsettings develppment file
 
-Console.WriteLine("Please enter full Sql Server name on your local machine?\nExample: 'DEV-PC-MJUSUPOV\\NEWSERVER'");
+Console.WriteLine("Please enter full Sql Server name on your local machine?\nExample: 'DESKTOP-AP9BKUN\\NEWSERVER'");
 var sqlServerInstance = Console.ReadLine();
-Console.WriteLine("Please enter Database name for connections?\nExample: 'NTACIDP_Test'");
-var sqlDatabaseSchema = Console.ReadLine();
+Console.WriteLine("Your database name is 'NTACIDP_Test' because Logical Name and Pysical Name (meta information)");
+Thread.Sleep(2000);
+
 Console.WriteLine("Please enter Debug Email Receiver:");
 var debugEmail = Console.ReadLine();
 
+var sqlDatabaseSchema = "NTACIDP_Test";
 var connectionString = $"Server={sqlServerInstance};Initial Catalog={sqlDatabaseSchema};Integrated Security=True;MultipleActiveResultSets=False;Connection Timeout=5";
 string jsonFullPath = currentDir + "\\appsettings.Development.json";
 
@@ -157,16 +159,18 @@ else
     File.WriteAllText(filePathAppSettings, string.Empty);
     File.WriteAllText(filePathAppSettings, jsonData.ToString());
 
-    Console.WriteLine("File already exists and content is replaced at {0}", filePathAppSettings);
+    Console.WriteLine("File already exists and content is replaced at {0}\n", filePathAppSettings);
 }
 
 // Import database from absolute path
 
-Console.WriteLine("This will work only if you have windows authentication and Encrypt=False(connection does not have to be encrypted)");
-Console.WriteLine("Press key to continue...");
+Console.WriteLine("Connection is work if you have windows authentication and Encrypt=False(connection does not have to be encrypted)");
+Console.WriteLine("Press key to continue...\n");
 Console.Read();
 
-string connectionStr = "Server=DESKTOP-AP9BKUN\\NEWSERVER;Database=master;Trusted_Connection=True;Encrypt=False;";
+Console.WriteLine("Enter absolute path to backup file?\nExample: C:\\NTACIDP_Test.bak");
+var databaseBackupPath = Console.ReadLine();
+string connectionStr = $"Server={sqlServerInstance};Database=master;Trusted_Connection=True;Encrypt=False;";
 string backupFilePath = @"C:\NTACIDP_Test.bak";
 
 SqlConnection sqlConnection = new SqlConnection(connectionStr);
@@ -176,7 +180,7 @@ ServerConnection serverConnection = new ServerConnection(sqlConnection);
 Server server = new Server(serverConnection);
 
 Restore restore = new Restore();
-restore.Database = "NTACIDP_Test";
+restore.Database = sqlDatabaseSchema;
 restore.Action = RestoreActionType.Database;
 restore.ReplaceDatabase = true;
 restore.Devices.AddDevice(backupFilePath, DeviceType.File);
