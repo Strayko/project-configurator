@@ -1,7 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
+using System.Data.SqlClient;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using Microsoft.SqlServer.Management.Smo;
+using Microsoft.Data.SqlClient;
+using Microsoft.SqlServer.Management.Common;
 
 // Select the right one path for NTAC-IDP
 
@@ -156,6 +160,32 @@ else
     Console.WriteLine("File already exists and content is replaced at {0}", filePathAppSettings);
 }
 
+// Import database from absolute path
+
+Console.WriteLine("This will work only if you have windows authentication and Encrypt=False(connection does not have to be encrypted)");
+Console.WriteLine("Press key to continue...");
+Console.Read();
+
+string connectionStr = "Server=DESKTOP-AP9BKUN\\NEWSERVER;Database=master;Trusted_Connection=True;Encrypt=False;";
+string backupFilePath = @"C:\NTACIDP_Test.bak";
+
+SqlConnection sqlConnection = new SqlConnection(connectionStr);
+sqlConnection.InfoMessage += new SqlInfoMessageEventHandler(ConnectionInfoMessage);
+
+ServerConnection serverConnection = new ServerConnection(sqlConnection);
+Server server = new Server(serverConnection);
+
+Restore restore = new Restore();
+restore.Database = "NTACIDP_Test";
+restore.Action = RestoreActionType.Database;
+restore.ReplaceDatabase = true;
+restore.Devices.AddDevice(backupFilePath, DeviceType.File);
+restore.SqlRestore(server);
+
+static void ConnectionInfoMessage(object sender, SqlInfoMessageEventArgs e)
+{
+    Console.WriteLine(e.Message);
+}
 
 
 Console.Read();
