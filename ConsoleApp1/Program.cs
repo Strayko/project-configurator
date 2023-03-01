@@ -1,12 +1,11 @@
 ﻿using System.Diagnostics;
-using System.Text.Json;
-using System.Data.SqlClient;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Microsoft.SqlServer.Management.Smo;
 using Microsoft.Data.SqlClient;
 using Microsoft.SqlServer.Management.Common;
 
+#region Select the right one path for NTAC-IDP
 // Select the right one path for NTAC-IDP
 
 Console.WriteLine("WELCOME TO IDP CONFIGURATOR\n");
@@ -39,7 +38,9 @@ while (!File.Exists(filePath))
 }
 
 Console.WriteLine("File exist!");
+#endregion
 
+#region Internet connection testing
 // Internet connection testing
 
 Console.WriteLine("Internet connection testing...");
@@ -68,7 +69,9 @@ if (exitCode == 1)
 }
 Console.WriteLine("Successfully connected!");
 Thread.Sleep(2000);
+#endregion
 
+#region Install .Net Core 3.1 Runtime
 // Install .Net Core 3.1 Runtime
 
 Console.WriteLine("Installing the .Net Core 3.1 runtime...");
@@ -99,7 +102,9 @@ else
 {
     Console.WriteLine(".Net Core 3.1 runtime installation failed with exit code.", installerExitCode);
 }
+#endregion
 
+#region Get application url
 // Get application url 
 
 string launchSettingsPath = projectPath + "\\NTAC-IDP\\Properties\\launchSettings.json";
@@ -113,7 +118,9 @@ string httpsAppUrl = partsUrl[0];
 
 Console.WriteLine("Create appsettings.Development.json file on local machine...");
 Thread.Sleep(2000);
+#endregion
 
+# region Setup appsettings develppment file
 // Setup appsettings develppment file
 
 Console.WriteLine("Please enter full Sql Server name on your local machine?\nExample: 'DESKTOP-AP9BKUN\\NEWSERVER'");
@@ -141,7 +148,9 @@ Console.WriteLine("Setup file in process...");
 Thread.Sleep(2000);
 Console.WriteLine("Create configured file to destination...");
 Thread.Sleep(2000);
+#endregion
 
+#region Create configured file to project path
 // Create configured file to project path
 
 string filePathAppSettings = projectPath + "\\NTAC-IDP\\appsettings.Development.json";
@@ -161,7 +170,9 @@ else
 
     Console.WriteLine("File already exists and content is replaced at {0}\n", filePathAppSettings);
 }
+#endregion
 
+#region Import database from absolute path
 // Import database from absolute path
 
 Console.WriteLine("Connection is work if you have windows authentication and Encrypt=False(connection does not have to be encrypted)");
@@ -170,9 +181,13 @@ Console.Read();
 
 Console.WriteLine("Enter absolute path to backup file?\nExample: C:\\NTACIDP_Test.bak");
 var databaseBackupPath = Console.ReadLine();
-string connectionStr = $"Server={sqlServerInstance};Database=master;Trusted_Connection=True;Encrypt=False;";
-string backupFilePath = @"C:\NTACIDP_Test.bak";
 
+databaseBackupPath = IsEmptyOrNullPath(databaseBackupPath);
+var isValidDatabasePath = Regex.IsMatch(databaseBackupPath, pathRegex);
+
+IsValidPath(ref databaseBackupPath, pathRegex, ref isValidDatabasePath);
+
+string connectionStr = $"Server={sqlServerInstance};Database=master;Trusted_Connection=True;Encrypt=False;";
 SqlConnection sqlConnection = new SqlConnection(connectionStr);
 sqlConnection.InfoMessage += new SqlInfoMessageEventHandler(ConnectionInfoMessage);
 
@@ -183,7 +198,7 @@ Restore restore = new Restore();
 restore.Database = sqlDatabaseSchema;
 restore.Action = RestoreActionType.Database;
 restore.ReplaceDatabase = true;
-restore.Devices.AddDevice(backupFilePath, DeviceType.File);
+restore.Devices.AddDevice(databaseBackupPath, DeviceType.File);
 restore.SqlRestore(server);
 
 static void ConnectionInfoMessage(object sender, SqlInfoMessageEventArgs e)
@@ -191,14 +206,12 @@ static void ConnectionInfoMessage(object sender, SqlInfoMessageEventArgs e)
     Console.WriteLine(e.Message);
 }
 
+Console.WriteLine("You are successfully setup NTAC Config Tool! Enjoy!");
+#endregion
 
 Console.Read();
 
-
-
-
-
-
+#region Utility
 static string IsEmptyOrNullPath(string? projectPath)
 {
     while (string.IsNullOrEmpty(projectPath))
@@ -226,3 +239,4 @@ static void IsValidPath(ref string? projectPath, string pathRegex, ref bool isVa
         if (isValidPath) break;
     }
 }
+#endregion
