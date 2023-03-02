@@ -15,6 +15,9 @@
     <None Update="appsettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="dotnet-sdk-3.1.100-win-x64.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="windowsdesktop-runtime-3.1.32-win-x64.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

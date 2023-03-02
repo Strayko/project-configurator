@@ -1,4 +1,13 @@
-﻿using System.Diagnostics;
+﻿/*
+ * @Name: NTAC Config Tool
+ * @Author: Moamer Jusupovic
+ * @Date: 02.03.2023
+ * @Description: Creating and configuring project files, 
+ * resolve dependency for runtime and restore database from local disk
+ * @Version: 1.0
+ */
+
+using System.Diagnostics;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Microsoft.SqlServer.Management.Smo;
@@ -6,7 +15,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.SqlServer.Management.Common;
 
 #region Select the right one path for NTAC-IDP
-// Select the right one path for NTAC-IDP
 
 Console.WriteLine("WELCOME TO IDP CONFIGURATOR\n");
 Console.WriteLine("Please insert path to your project solution: \n\nExample: C:\\Users\\Korisnik\\source\\repos\\ConsoleApp1");
@@ -41,7 +49,6 @@ Console.WriteLine("File exist!");
 #endregion
 
 #region Internet connection testing
-// Internet connection testing
 
 Console.WriteLine("Internet connection testing...");
 Thread.Sleep(2000);
@@ -72,7 +79,6 @@ Thread.Sleep(2000);
 #endregion
 
 #region Install .Net Core 3.1 Runtime
-// Install .Net Core 3.1 Runtime
 
 Console.WriteLine("Installing the .Net Core 3.1 runtime...");
 Console.WriteLine("Please Wait...");
@@ -83,7 +89,7 @@ for (int i = 0; i < 3; i++)
 {
     currentDir = Directory.GetParent(currentDir).FullName;
 }
-string installerPath = Path.Combine(currentDir, "windowsdesktop-runtime-3.1.32-win-x64.exe");
+string installerPath = Path.Combine(currentDir, "dotnet-sdk-3.1.100-win-x64.exe");
 string argumentsForInstaller = "/q";
 ProcessStartInfo psiRuntime = new ProcessStartInfo(installerPath, argumentsForInstaller);
 
@@ -105,7 +111,6 @@ else
 #endregion
 
 #region Get application url
-// Get application url 
 
 string launchSettingsPath = projectPath + "\\NTAC-IDP\\Properties\\launchSettings.json";
 string launchSettingsContents = File.ReadAllText(launchSettingsPath);
@@ -121,7 +126,6 @@ Thread.Sleep(2000);
 #endregion
 
 # region Setup appsettings develppment file
-// Setup appsettings develppment file
 
 Console.WriteLine("Please enter full Sql Server name on your local machine?\nExample: 'DESKTOP-AP9BKUN\\NEWSERVER'");
 var sqlServerInstance = Console.ReadLine();
@@ -151,7 +155,6 @@ Thread.Sleep(2000);
 #endregion
 
 #region Create configured file to project path
-// Create configured file to project path
 
 string filePathAppSettings = projectPath + "\\NTAC-IDP\\appsettings.Development.json";
 
@@ -173,7 +176,6 @@ else
 #endregion
 
 #region Import database from absolute path
-// Import database from absolute path
 
 Console.WriteLine("Connection is work if you have windows authentication and Encrypt=False(connection does not have to be encrypted)");
 Console.WriteLine("Press key to continue...\n");
